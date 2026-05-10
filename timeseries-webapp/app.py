@@ -459,9 +459,9 @@ else:
                     ))
                 # 구분선
                 fig_pred.add_vline(
-                    x=test.index[0], line_dash="dash", line_color="gray",
+                    x=str(test.index[0]), line_dash="dash", line_color="gray",
                     annotation_text="테스트 시작", annotation_position="top right"
-                )
+                    )
                 fig_pred.update_layout(
                     height=420, hovermode='x unified',
                     margin=dict(l=0,r=0,t=30,b=0),
@@ -490,9 +490,11 @@ else:
                         marker=dict(size=4)
                     ))
                 fig_future.add_vline(
-                    x=ts.index[-1], line_dash="dash", line_color="green",
+                    x=str(ts.index[-1]), line_dash="dash", line_color="green",
                     annotation_text="현재", annotation_position="top right"
-                )
+                    )
+
+
                 fig_future.update_layout(
                     height=380, hovermode='x unified',
                     margin=dict(l=0,r=0,t=30,b=0),
@@ -648,3 +650,5 @@ else:
 
             for ins in insights:
                 st.markdown(ins)
+
+
