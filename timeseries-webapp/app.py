@@ -458,10 +458,13 @@ else:
                                   dash='solid' if is_best else 'dash')
                     ))
                 # 구분선
-                fig_pred.add_vline(
-                    x=str(test.index[0]), line_dash="dash", line_color="gray",
-                    annotation_text="테스트 시작", annotation_position="top right"
-                    )
+                fig_pred.add_trace(go.Scatter(
+                    x=[test.index[0], test.index[0]],
+                    y=[ts['y'].min(), ts['y'].max()],
+                    mode='lines', name='테스트 시작',
+                    line=dict(color='gray', dash='dash', width=1.5),
+                    showlegend=True
+                    ))
                 fig_pred.update_layout(
                     height=420, hovermode='x unified',
                     margin=dict(l=0,r=0,t=30,b=0),
@@ -489,10 +492,13 @@ else:
                                   width=3 if is_best else 1.5),
                         marker=dict(size=4)
                     ))
-                fig_future.add_vline(
-                    x=str(ts.index[-1]), line_dash="dash", line_color="green",
-                    annotation_text="현재", annotation_position="top right"
-                    )
+                fig_future.add_trace(go.Scatter(
+                    x=[ts.index[-1], ts.index[-1]],
+                    y=[ts['y'].min(), ts['y'].max()],
+                    mode='lines', name='현재',
+                    line=dict(color='green', dash='dash', width=1.5),
+                    showlegend=True
+                    ))
 
 
                 fig_future.update_layout(
