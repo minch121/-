@@ -64,45 +64,47 @@ def forecast_exponential_smoothing(train, test_steps, forecast_steps, alpha=None
 def forecast_holt_winters(train, test_steps, forecast_steps, seasonal_periods=None):
     """Holt-Winters 예측"""
     series = train['y']
-
-    if seasonal_periods is None:
-        # 자동 추론
-        n = len(series)
-        if n >= 24:
-            seasonal_periods = 12
-        elif n >= 14:
-            seasonal_periods = 7
-        else:
-            seasonal_periods = None
-
     try:
+        if seasonal_periods is None:
+            n = len(series)
+            if n >= 24:
+                seasonal_periods = 12
+            elif n >= 14:
+                seasonal_periods = 7
+            else:
+                seasonal_periods = None
+
         if seasonal_periods and len(series) >= 2 * seasonal_periods:
             model = ExponentialSmoothing(
-                series,
-                trend='add',
-                seasonal='add',
+                series, trend='add', seasonal='add',
                 seasonal_periods=seasonal_periods,
                 initialization_method='estimated'
             )
         else:
             model = ExponentialSmoothing(
-                series,
-                trend='add',
-                seasonal=None,
+                series, trend='add', seasonal=None,
                 initialization_method='estimated'
             )
-        fitted = model.fit(optimized=True)
+
+        fitted = model.fit(optimized=True, method='ls')
         all_forecast = fitted.forecast(test_steps + forecast_steps)
-        test_pred = all_forecast[:test_steps].values
+
+        # 발산 방지: 예측값이 학습 데이터 범위의 3배 초과하면 ES로 대체
+        series_min, series_max = series.min(), series.max()
+        margin = (series_max - series_min) * 3
+        if all_forecast.min() < series_min - margin or all_forecast.max() > series_max + margin:
+            return forecast_exponential_smoothing(train, test_steps, forecast_steps)
+
+        test_pred  = all_forecast[:test_steps].values
         future_pred = all_forecast[test_steps:].values
         params = {
             'alpha': round(fitted.params.get('smoothing_level', 0), 4),
-            'beta': round(fitted.params.get('smoothing_trend', 0), 4),
+            'beta':  round(fitted.params.get('smoothing_trend', 0), 4),
             'seasonal_periods': seasonal_periods
         }
         return test_pred, future_pred, params
+
     except Exception as e:
-        # fallback to simple
         return forecast_exponential_smoothing(train, test_steps, forecast_steps)
 
 

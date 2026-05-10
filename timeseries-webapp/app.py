@@ -110,9 +110,10 @@ with st.sidebar:
     forecast_horizon = st.slider("⏱️ 예측 시평 (Forecast Horizon)", 7, 365, 30, step=1,
                                   help="미래 몇 스텝을 예측할지 설정합니다")
 
-    test_ratio = st.slider("테스트셋 비율", 0.1, 0.4, 0.2, step=0.05,
-                            format="%.0f%%",
-                            help="전체 데이터 중 평가에 사용할 비율")
+    test_ratio_pct = st.slider("테스트셋 비율", 10, 40, 20, step=5,
+                             format="%d%%",
+                             help="전체 데이터 중 평가에 사용할 비율")
+    test_ratio = test_ratio_pct / 100
 
     st.markdown("---")
     st.markdown("### 🤖 예측 모델 선택")
